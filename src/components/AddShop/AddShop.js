@@ -1,22 +1,14 @@
-import React from "react";
+import React, { useState } from "react";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import FormikControl from './FormikControl'
-import { connect } from 'react-redux';
+import { connect, useDispatch } from 'react-redux';
 import { addToShop } from '../../actions'
 import "./AddShop.scss";
+import shop from "../../reducers/shopReducer";
+import cuid from 'cuid'
 
-const mapStateToProps = (state) => {
-    return {
-        addshops: state,
-    };
-};
 
-const mapDispatchToProps = (dispatch) => {
-    return {
-        addTodo: (obj) => dispatch(addToShop(obj)),
-    };
-};
 
 const validationSchema = Yup.object().shape({
     shopName: Yup.string()
@@ -28,11 +20,11 @@ const validationSchema = Yup.object().shape({
     shopArea: Yup.string()
         .required('*Area value is required.'),
     openingDate: Yup.date()
-        .required('*Date is required.'),
-    // .nullable(),
+        .required('*Date is required.')
+        .nullable(),
     closingDate: Yup.date()
         .required('Required')
-    // .nullable()
+        .nullable()
 });
 
 const categoryOptions = [
@@ -56,7 +48,6 @@ const areaOptions = [
 
 const initialValues = {
     shopName: "",
-    password: "",
     shopCategory: '',
     shopArea: '',
     openingDate: null,
@@ -65,14 +56,38 @@ const initialValues = {
 
 
 const AddShop = (props) => {
+    const [tasks, setTasks] = useState("");
+    /* const [shopName, setShopName] = useState("");
+    const [shopCategory, setShopCategory] = useState("");
+    const [shopArea, setShopArea] = useState("");
+    const [openingDate, setOpeningDate] = useState("");
+    const [closingDate, setClosingDate] = useState(""); */
 
+    const dispatch = useDispatch();
+
+    const handleInputChange = (e) => {
+        setTasks(e.target.value)
+    }
+
+    const handleSubmit = (e) => {
+
+        e.preventDefault();
+
+        /* dispatch(shop({
+            shopName: shopName,
+            shopCategory: shopCategory,
+            shopArea: shopArea,
+            openingDate: openingDate,
+            closingDate: closingDate
+        })) */
+        setTasks(dispatch(addToShop({ task: tasks, id: cuid() })))
+        e.target.userInput.value = "";
+    }
     return (
         <Formik
             initialValues={initialValues}
             validationSchema={validationSchema}
-            onSubmit={values => {
-                console.log(values)
-            }}
+            onSubmit={(e) => handleSubmit(e)}
         >
             {formik => (
 
@@ -86,7 +101,7 @@ const AddShop = (props) => {
                                 control="input"
                                 label="Shop Name"
                                 name="shopName"
-
+                                onKeyUp={(e) => handleInputChange(e)}
                             />
                         </div>
                         <div className="form-group mt-3">
@@ -94,6 +109,7 @@ const AddShop = (props) => {
                                 control='select'
                                 label='Category'
                                 name='shopCategory'
+                                onKeyUp={(e) => handleInputChange(e)}
                                 options={categoryOptions}
                             />
                         </div>
@@ -102,6 +118,7 @@ const AddShop = (props) => {
                                 control='select'
                                 label='Area'
                                 name='shopArea'
+                                onKeyUp={(e) => handleInputChange(e)}
                                 options={areaOptions}
                             />
                         </div>
@@ -110,6 +127,7 @@ const AddShop = (props) => {
                                 control='date'
                                 label='Opening date'
                                 name='openDate'
+                                onChange={(e) => handleInputChange(e)}
                             />
 
                         </div>
@@ -118,6 +136,7 @@ const AddShop = (props) => {
                                 control='date'
                                 label='Closing date'
                                 name='closeDate'
+                                onChange={(e) => handleInputChange(e)}
                             />
                         </div>
 
@@ -125,7 +144,7 @@ const AddShop = (props) => {
 
                         <button className='btn btn-dark mt-3'
                             type='submit'
-                        // disabled={!formik.isValid || formik.isSubmitting}
+                        // disabled={!formik.isValid}
                         >
                             Submit
                         </button>
@@ -137,4 +156,4 @@ const AddShop = (props) => {
     );
 };
 
-export default connect()(AddShop);
+export default connect(null, null)(AddShop);
