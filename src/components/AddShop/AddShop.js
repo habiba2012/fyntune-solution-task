@@ -80,7 +80,7 @@ const AddShop = (props) => {
             openingDate: openingDate,
             closingDate: closingDate
         })) */
-        setTasks(dispatch(addToShop({ task: tasks, id: cuid() })))
+        dispatch(addToShop({ task: tasks, id: cuid() }))
         e.target.userInput.value = "";
     }
     return (
